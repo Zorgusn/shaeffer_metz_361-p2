@@ -7,6 +7,8 @@ int
 main (int argc, char **argv)
 {
   // TODO: Open the file specified on the command line
+  char *filename = argv[1];
+  
   // Note: The file contains a binary network packet
 
   // TODO: Determine the size of the packet in bytes
