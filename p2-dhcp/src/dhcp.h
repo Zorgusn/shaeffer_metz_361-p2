@@ -61,7 +61,7 @@ typedef struct {
   uint8_t op, htype, hlen, hops;
   uint32_t xid;
   uint16_t secs, flags;
-  struct in_addr ciaddr, yiaddr, siaddr, giaddr;
+  uint32_t ciaddr, yiaddr, siaddr, giaddr;
   uint8_t chaddr[16];
   uint8_t sname[64];
   uint8_t file[128];

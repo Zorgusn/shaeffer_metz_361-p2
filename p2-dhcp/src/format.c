@@ -33,16 +33,25 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
     htypestr = "Asynchronous Transmission Mode (ATM)";
   } 
   fprintf(output, "Hardware Type (htype) = %d [%s]\n", msg->htype, htypestr);
-  fprintf(output, "Hardware Address Length (hlen) = %d\n");
-  fprintf(output, "Hops (hops) = %d\n");
-  fprintf(output, "Transaction ID (xid) = %d (0x%x)\n");
-  fprintf(output, "Seconds (secs) = %d Days, %d:%d:%d\n");
-  fprintf(output, "Flags (flags) = %d\n");
+  fprintf(output, "Hardware Address Length (hlen) = %d\n", msg->hlen);
+  fprintf(output, "Hops (hops) = %d\n", msg->hops);
+  fprintf(output, "Transaction ID (xid) = %d (0x%x)\n", msg->xid, msg->xid);
+  
+  uint16_t seconds = msg->secs;
+  uint16_t days = seconds / 86400;
+  seconds %= 86400;
+  uint16_t hours = seconds / 3600;
+  seconds %= 3600;
+  uint16_t minutes = seconds / 60;
+  seconds %= 60;
+  fprintf(output, "Seconds (secs) = %d Days, %d:%d:%d\n", days, hours, minutes, seconds);
+  fprintf(output, "Flags (flags) = %d\n", msg->flags);
+  
   fprintf(output, "Client IP Address (ciaddr) = \n");
   fprintf(output, "Your IP Address (yiaddr) = \n");
   fprintf(output, "Server IP Address (siaddr) = \n");
   fprintf(output, "Relay IP Address (giaddr) = \n");
-  fprintf(output, "Client Ethernet Address (chaddr) = \n");
+  fprintf(output, "Client Ethernet Address (chaddr) = %x \n", msg->chaddr);
 
   fprintf (output, "------------------------------------------------------\n");
   fprintf (output, "DHCP Options\n");
