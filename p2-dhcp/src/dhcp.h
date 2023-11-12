@@ -58,9 +58,14 @@
 // (DHCP options replaced BOOTP vend, but does not have a fixed size and
 // cannot be declared in a fixed-size struct.)
 typedef struct {
-  uint8_t op;
-  //TODO: Add the remaining fields to this struct as specified in
-  //      RFC2131 and the "Phase 1" section of the assignment
+  uint8_t op, htype, hlen, hops;
+  uint32_t xid;
+  uint16_t secs, flags;
+  struct in_addr ciaddr, yiaddr, siaddr, giaddr;
+  uint8_t chaddr[16];
+  uint8_t sname[64];
+  uint8_t file[128];
+  uint8_t options[312];
 } msg_t;
 
 // Utility function for printing the raw bytes of a packet:
