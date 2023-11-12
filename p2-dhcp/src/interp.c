@@ -9,7 +9,6 @@
 int
 main (int argc, char **argv)
 {
-  msg_t packet;
   // TODO: Open the file specified on the command line
   char *filename = argv[1];
   FILE *bin = fopen(filename, "r");
@@ -26,13 +25,13 @@ main (int argc, char **argv)
   // uint8_t *var;
 
   // TODO: Allocate enough space to hold the packet (store in your varaible)
-  msg_t packet = calloc(1, size);
+  msg_t *packet = calloc(1, size);
 
   // TODO: Read the packet data from the file into your variable
-  fread(&packet, size, 1, bin);
+  fread(packet, size, 1, bin);
 
   // TODO: Call dump_msg() from format.c to print the packet data to stdout
-  dump_msg(stdout, &packet, size);
+  dump_msg(stdout, packet, size);
   // TODO: Don't forget to free the dynamically-allocated space
   free(packet);
 
