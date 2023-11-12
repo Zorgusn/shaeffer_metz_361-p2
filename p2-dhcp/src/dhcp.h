@@ -57,7 +57,7 @@
 // should NOT include the BOOTP vend field or the DHCP options field.
 // (DHCP options replaced BOOTP vend, but does not have a fixed size and
 // cannot be declared in a fixed-size struct.)
-typedef struct {
+typedef struct  __attribute__((__packed__)) {
   uint8_t op, htype, hlen, hops;
   uint32_t xid;
   uint16_t secs, flags;
