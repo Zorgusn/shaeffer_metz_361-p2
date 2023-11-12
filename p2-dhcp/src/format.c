@@ -36,7 +36,7 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
   fprintf(output, "Hardware Address Length (hlen) = %d\n", msg->hlen);
   fprintf(output, "Hops (hops) = %d\n", msg->hops);
   fprintf(output, "Transaction ID (xid) = %d (0x%x)\n", msg->xid, msg->xid);
-  
+
   uint16_t seconds = msg->secs;
   uint16_t days = seconds / 86400;
   seconds %= 86400;
@@ -46,11 +46,14 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
   seconds %= 60;
   fprintf(output, "Seconds (secs) = %d Days, %d:%d:%d\n", days, hours, minutes, seconds);
   fprintf(output, "Flags (flags) = %d\n", msg->flags);
-  
-  fprintf(output, "Client IP Address (ciaddr) = \n");
-  fprintf(output, "Your IP Address (yiaddr) = \n");
-  fprintf(output, "Server IP Address (siaddr) = \n");
-  fprintf(output, "Relay IP Address (giaddr) = \n");
+  unsigned char *cibytes = (unsigned char*) msg->ciaddr;
+  fprintf(output, "Client IP Address (ciaddr) %u.%u.%u.%u = \n", cibytes[0], cibytes[1], cibytes[2], cibytes[3]);
+  unsigned char *yibytes = (unsigned char*) msg->yiaddr;
+  fprintf(output, "Your IP Address (yiaddr) %u.%u.%u.%u = \n", yibytes[0], yibytes[1], yibytes[2], yibytes[3]);
+  unsigned char *sibytes = (unsigned char*) msg->siaddr;
+  fprintf(output, "Server IP Address (siaddr) %u.%u.%u.%u = \n", sibytes[0], sibytes[1], sibytes[2], sibytes[3]);
+  unsigned char *gibytes = (unsigned char*) msg->giaddr;
+  fprintf(output, "Relay IP Address (giaddr) %u.%u.%u.%u = \n", gibytes[0], gibytes[1], gibytes[2], gibytes[3]);
   fprintf(output, "Client Ethernet Address (chaddr) = %x \n", msg->chaddr);
 
   fprintf (output, "------------------------------------------------------\n");
