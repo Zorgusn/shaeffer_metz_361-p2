@@ -30,6 +30,14 @@ main (int argc, char **argv)
   // TODO: Read the packet data from the file into your variable
   fread(packet, size, 1, bin);
 
+  packet->xid = ntohl(packet->xid);
+  packet->secs = ntohs(packet->secs);
+  packet->flags = ntohs(packet->flags);
+  packet->ciaddr = ntohl(packet->ciaddr);
+  packet->yiaddr = ntohl(packet->yiaddr);
+  packet->siaddr = ntohl(packet->siaddr);
+  packet->giaddr = ntohl(packet->giaddr);
+
   // TODO: Call dump_msg() from format.c to print the packet data to stdout
   dump_msg(stdout, packet, size);
   // TODO: Don't forget to free the dynamically-allocated space
