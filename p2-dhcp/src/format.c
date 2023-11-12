@@ -1,8 +1,22 @@
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "dhcp.h"
 #include "format.h"
+
+bool
+check_magic_cookie (uint8_t *options)
+{
+  for (int i = 0; i < 4; i++)
+    {
+      if (options[i] != ((MAGIC_COOKIE >> (24 - (8 * i))) & 0xFF))
+        {
+          return false;
+        }
+    }
+  return true;
+}
 
 void
 dump_msg (FILE *output, msg_t *msg, size_t size)
@@ -59,7 +73,7 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
   seconds %= 3600;
   uint16_t minutes = seconds / 60;
   seconds %= 60;
-  fprintf (output, "Seconds (secs) = %d Days, %d:%d:%d\n", days, hours,
+  fprintf (output, "Seconds (secs) = %d Days, %d:%02d:%02d\n", days, hours,
            minutes, seconds);
   fprintf (output, "Flags (flags) = %d\n", msg->flags);
   unsigned char *cibytes = (unsigned char *)&msg->ciaddr;
@@ -74,29 +88,36 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
   unsigned char *gibytes = (unsigned char *)&msg->giaddr;
   fprintf (output, "Relay IP Address (giaddr) = %u.%u.%u.%u\n", gibytes[0],
            gibytes[1], gibytes[2], gibytes[3]);
-  // fprintf(output, "Client Ethernet Address (chaddr) = %x\n", msg->chaddr);
   fprintf (output, "Client Ethernet Address (chaddr) = ");
-  size_t revIndex = 15;
-  int cnt = 0;
-  while (revIndex >= 1)
-    {
-      if (msg->chaddr[revIndex--] != 0x0) {
-        break;
-      } else {
-        cnt++;
-      }
-    }
 
   size_t index = 0;
-  while (index < 16 - cnt)
+  while (index < msg->hlen)
     {
       fprintf (output, "%02" PRIx8, msg->chaddr[index++]);
     }
   fprintf (output, "\n");
 
+  // TODO: Print out the DHCP fields as specified in the assignment
+  if (!check_magic_cookie (msg->options))
+    {
+      return;
+    }
   fprintf (output, "------------------------------------------------------\n");
   fprintf (output, "DHCP Options\n");
   fprintf (output, "------------------------------------------------------\n");
-
-  // TODO: Print out the DHCP fields as specified in the assignment
+  fprintf (output, "Magic Cookie = [OK]\n");
+  size_t opt_i = 4;
+  while (opt_i < 312) {
+    uint8_t code = msg->options[opt_i];
+    if (code == 0) {
+      opt_i += 1;
+      continue;
+    } else if (code == 255) {
+      break;
+    }
+    uint8_t len = msg->options[opt_i + 1];
+    uint8_t *value = &msg->options[opt_i + 2];
+    printf("%d (len %d) = TODO at %ld\n", code, len, opt_i); //TODO - Print code names and values instead of number representation
+    opt_i += 2 + (int)len;
+  }
 }
