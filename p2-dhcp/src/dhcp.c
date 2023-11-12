@@ -4,7 +4,6 @@
 
 #include "dhcp.h"
 
-
 // This dump_packet is provided code | DONT TOUCH
 void
 dump_packet (uint8_t *ptr, size_t size)
