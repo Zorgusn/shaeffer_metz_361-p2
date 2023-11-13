@@ -107,17 +107,73 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
   fprintf (output, "------------------------------------------------------\n");
   fprintf (output, "Magic Cookie = [OK]\n");
   size_t opt_i = 4;
-  while (opt_i < 312) {
-    uint8_t code = msg->options[opt_i];
-    if (code == 0) {
-      opt_i += 1;
-      continue;
-    } else if (code == 255) {
-      break;
+  while (opt_i < 312)
+    {
+      uint8_t code = msg->options[opt_i];
+      if (code == 0)
+        {
+          opt_i += 1;
+          continue;
+        }
+      else if (code == 255)
+        {
+          break;
+        }
+      uint8_t len = msg->options[opt_i + 1];
+      uint8_t *value = &msg->options[opt_i + 2];
+      switch (code)
+        {
+        case 53: // message type
+          printf ("Message Type = ");
+          switch (value[0])
+            {
+            case DHCPDISCOVER:
+              printf ("DHCP Discover\n");
+              break;
+            case DHCPOFFER:
+              printf ("DHCP Offer\n");
+              break;
+            case DHCPREQUEST:
+              printf ("DHCP Request\n");
+              break;
+            case DHCPDECLINE:
+              printf ("DHCP Decline\n");
+              break;
+            case DHCPACK:
+              printf ("DHCP ACK\n");
+              break;
+            case DHCPNAK:
+              printf ("DHCP NAK\n");
+              break;
+            case DHCPRELEASE:
+              printf ("DHCP Release\n");
+              break;
+            }
+          break;
+        case 51: ;// address lease time
+          uint16_t l_seconds = (value[0] << 4) + value[1];
+          uint16_t l_days = l_seconds / 86400;
+          l_seconds %= 86400;
+          uint16_t l_hours = l_seconds / 3600;
+          l_seconds %= 3600;
+          uint16_t l_minutes = l_seconds / 60;
+          l_seconds %= 60;
+          printf ("IP Address Lease Time = %d Days, %d:%02d:%02d\n", l_days,
+                  l_hours, l_minutes, l_seconds);
+          break;
+        case 50: // request adr
+          printf ("Request = %u.%u.%u.%u\n", value[0], value[1], value[2],
+                  value[3]);
+          break;
+        case 54: // server adr
+          printf ("Server Identifier = %u.%u.%u.%u\n", value[0], value[1],
+                  value[2], value[3]);
+          break;
+        }
+      // printf ("%d (len %d) = TODO at %ld\n", code, len,
+      //         opt_i); // TODO - Print code names and values instead of
+      //         number
+      //                 // representation
+      opt_i += 2 + (int)len;
     }
-    uint8_t len = msg->options[opt_i + 1];
-    uint8_t *value = &msg->options[opt_i + 2];
-    printf("%d (len %d) = TODO at %ld\n", code, len, opt_i); //TODO - Print code names and values instead of number representation
-    opt_i += 2 + (int)len;
-  }
 }
