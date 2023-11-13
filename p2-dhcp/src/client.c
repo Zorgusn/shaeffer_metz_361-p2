@@ -1,4 +1,5 @@
 #include <getopt.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -6,27 +7,13 @@
 #include "format.h"
 #include "port_utils.h"
 
+static bool get_args (int, char **, msg_t *);
+
 int
 main (int argc, char **argv)
 {
   msg_t msg;
-  msg.op = 0;                   // TODO
-  msg.htype = ETH;              // default
-  msg.hlen = 0;                 // TODO
-  msg.hops = 0;                 // TODO
-  msg.xid = 42;                 // default
-  msg.secs = 0;                 // TODO? 0 seconds elapsed?
-  msg.flags = 0;                // TODO
-  msg.ciaddr = 0;               // TODO client addr
-  msg.yiaddr = 0;               // TODO your addr
-  msg.siaddr = 0;               // TODO server addr
-  msg.giaddr = 0;               // TODO relay addr
-  memset (msg.chaddr, 0, 16);   // set to all 0s
-  msg.chaddr[1] = 1;            // default val
-  msg.chaddr[3] = 2;            // default val
-  memset (msg.sname, 0, 64);    // TODO
-  memset (msg.file, 0, 128);    // TODO
-  memset (msg.options, 0, 312); // TODO
+  memset (&msg, 0, sizeof (msg_t));
 
   if (!get_args (argc, argv, &msg))
     {
@@ -47,7 +34,14 @@ get_args (int argc, char **argv, msg_t *msg)
         // x: use N as the XID field (32-bit unsigned integer)
         //    [default 42]
         case 'x':
-          msg->xid = atoi (optarg);
+          if (optarg)
+            {
+              msg->xid = atoi (optarg);
+            }
+          else
+            {
+              msg->xid = 42;
+            }
           break;
         // t: use N as the hardware type (must be named in src/dhcp.h)
         //    [default ETH]
@@ -70,47 +64,105 @@ get_args (int argc, char **argv, msg_t *msg)
             case ATM:
               msg->htype = ATM;
               break;
-            case ETH:
-              // noop: provided type same as default
+            case ETH: // ETH gets wrapped up as the default val
             default:
-              // noop: invalid htype provided, go with default
+              msg->htype = ETH;
               break;
             }
           //===================================================================
           break;
         // c: use N as the hardware address (chaddr)
-        //    [default 0102...]
-        case 'c':
-          // this should work?? hopefully
-          *(msg->chaddr) = atol (optarg);
+        //    [default 0x010203040506]
+        case 'c':;
+          long tmpchaddr = 0;
+          if (optarg)
+            {
+              tmpchaddr = atol (optarg);
+            }
+          else
+            {
+              tmpchaddr = 0x010203040506;
+            }
+          uint8_t *tmparr = (uint8_t *)tmpchaddr;
+          for (int i = 0; i < 16; i++)
+            {
+              msg->chaddr[i] = tmparr[i];
+            }
           break;
         // m: create DHCP msg type M
         //    [default DHCPDISCOVER]
         case 'm':
-          // TODO: not sure where to put this in the options array
+          //===================================================================
+          switch (atoi (optarg))
+            {
+            case DHCPOFFER:
+              msg->options[6] = DHCPOFFER;
+              break;
+            case DHCPREQUEST:
+              msg->options[6] = DHCPREQUEST;
+              break;
+            case DHCPDECLINE:
+              msg->options[6] = DHCPDECLINE;
+              break;
+            case DHCPACK:
+              msg->options[6] = DHCPACK;
+              break;
+            case DHCPNAK:
+              msg->options[6] = DHCPNAK;
+              break;
+            case DHCPRELEASE:
+              msg->options[6] = DHCPRELEASE;
+              break;
+            case DHCPDISCOVER:
+            default:
+              msg->options[6] = DHCPDISCOVER;
+              break;
+            }
+          //===================================================================
           break;
         // s: specify the server IP DHCP option
         //    [default 127.0.0.1]
-        case 's':
-          uint8_t addr[4];
-          char *rest1, rest2, rest3, rest4;
-          addr[0] = strtol(optarg, &rest1, 10); 
-          addr[1] = strtol(rest1, &rest2, 10);
-          addr[2] = strtol(rest2, &rest3, 10);
-          addr[3] = strtol(rest3, &rest4, 10);
-          msg->siaddr = (uint32_t) addr;
+        case 's':;
+          uint8_t saddr[4];
+          if (optarg)
+            {
+              char *srest1, *srest2, *srest3, *srest4;
+              saddr[0] = strtol (optarg, &srest1, 10);
+              saddr[1] = strtol (srest1, &srest2, 10);
+              saddr[2] = strtol (srest2, &srest3, 10);
+              saddr[3] = strtol (srest3, &srest4, 10);
+            }
+          else
+            {
+              saddr[0] = 127;
+              saddr[1] = 0;
+              saddr[2] = 0;
+              saddr[3] = 1;
+            }
+          msg->siaddr = *(uint32_t *)saddr;
           break;
         // r: specify the requested IP DHCP option
         //    [default [127.0.0.2]
         case 'r':
-          // I think this is for giaddr?
-          uint8_t addr[4];
-          char *rest1, rest2, rest3, rest4;
-          addr[0] = strtol(optarg, &rest1, 10); 
-          addr[1] = strtol(rest1, &rest2, 10);
-          addr[2] = strtol(rest2, &rest3, 10);
-          addr[3] = strtol(rest3, &rest4, 10);
-          msg->giaddr = (uint32_t) addr; 
+            // I think this is for giaddr?
+            ;
+          uint8_t gaddr[4];
+          if (optarg)
+            {
+              char *grest1, *grest2, *grest3, *grest4;
+              gaddr[0] = strtol (optarg, &grest1, 10);
+              gaddr[1] = strtol (grest1, &grest2, 10);
+              gaddr[2] = strtol (grest2, &grest3, 10);
+              gaddr[3] = strtol (grest3, &grest4, 10);
+            }
+          else
+            {
+              gaddr[0] = 127;
+              gaddr[1] = 0;
+              gaddr[2] = 0;
+              gaddr[3] = 2;
+            }
+          msg->giaddr = *(uint32_t *)gaddr;
           break;
         // p: initiate the protocol (send UDP packet)
         case 'p':
