@@ -150,8 +150,12 @@ dump_msg (FILE *output, msg_t *msg, size_t size)
               break;
             }
           break;
-        case 51: ;// address lease time
-          uint16_t l_seconds = (value[0] << 4) + value[1];
+        case 51:; // address lease time
+          // uint16_t l_seconds = (value[0] << 24) + (value[1] << 16)+
+          // (value[2] << 8)+ value[3];
+          uint32_t l_seconds;
+          memcpy (&l_seconds, value, 4);
+          l_seconds = ntohl (l_seconds);
           uint16_t l_days = l_seconds / 86400;
           l_seconds %= 86400;
           uint16_t l_hours = l_seconds / 3600;
