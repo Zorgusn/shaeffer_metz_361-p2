@@ -85,8 +85,8 @@ get_args (int argc, char **argv, msg_t *msg)
             }
           else
             {
-              uint8_t defarr[] = { 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6 };
-              for (int i = 0; i < 12; i++)
+              uint8_t defarr[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
+              for (int i = 0; i < 6; i++)
                 {
                   msg->chaddr[i] = defarr[i];
                 }
