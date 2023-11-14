@@ -7,25 +7,31 @@
 #include "format.h"
 #include "port_utils.h"
 
-static bool get_args (int, char **, msg_t *);
+static bool get_args (int, char **, msg_t *, bool *p);
 
 int
 main (int argc, char **argv)
 {
   msg_t msg;
+  bool p;
   memset (&msg, 0, sizeof (msg_t));
   make_default_msg(&msg);
 
-  if (!get_args (argc, argv, &msg))
+  if (!get_args (argc, argv, &msg, &p))
     {
       return EXIT_FAILURE;
     }
   dump_msg(stdout, &msg, sizeof(msg_t));
+  if (p) {
+    printf("\n");
+    //TODO - Server stuff
+  }
+
   return EXIT_SUCCESS;
 }
 
 static bool
-get_args (int argc, char **argv, msg_t *msg)
+get_args (int argc, char **argv, msg_t *msg, bool *p)
 {
   int option;
 
@@ -75,7 +81,7 @@ get_args (int argc, char **argv, msg_t *msg)
           break;
         // c: use N as the hardware address (chaddr)
         //    [default 0x010203040506]
-        case 'c':;
+        case 'c':; //TODO - SHOULD CHANGE HLEN
           long tmpchaddr = 0;
           if (optarg != NULL)
             {
@@ -171,6 +177,7 @@ get_args (int argc, char **argv, msg_t *msg)
         // p: initiate the protocol (send UDP packet)
         case 'p':
           // ignore for now
+          *p = true;
           break;
         default:
           return false;

@@ -47,6 +47,10 @@ make_default_msg (msg_t *msg)
   msg->options[2] = 0x53;
   msg->options[3] = 0x63;
 
+  msg->options[4] = 53;
+  msg->options[5] = 1;
+  msg->options[6] = DHCPDISCOVER;
+
   // uint8_t *saddr = (uint8_t *)&msg->siaddr;
   // saddr[0] = 127;
   // saddr[1] = 0;
