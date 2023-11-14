@@ -34,7 +34,7 @@ get_args (int argc, char **argv, msg_t *msg)
         // x: use N as the XID field (32-bit unsigned integer)
         //    [default 42]
         case 'x':
-          if (optarg)
+          if (optarg == NULL)
             {
               msg->xid = atoi (optarg);
             }
@@ -75,18 +75,21 @@ get_args (int argc, char **argv, msg_t *msg)
         //    [default 0x010203040506]
         case 'c':;
           long tmpchaddr = 0;
-          if (optarg)
+          if (optarg != NULL)
             {
-              tmpchaddr = atol (optarg);
+              tmpchaddr = strtol (optarg, NULL, 16);
+              for (int i = 0; i < 16; i++)
+                {
+                  msg->chaddr[i] = ((uint8_t *)&tmpchaddr)[i];
+                }
             }
           else
             {
-              tmpchaddr = 0x010203040506;
-            }
-          uint8_t *tmparr = (uint8_t *)tmpchaddr;
-          for (int i = 0; i < 16; i++)
-            {
-              msg->chaddr[i] = tmparr[i];
+              uint8_t defarr[] = { 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6 };
+              for (int i = 0; i < 12; i++)
+                {
+                  msg->chaddr[i] = defarr[i];
+                }
             }
           break;
         // m: create DHCP msg type M
@@ -124,7 +127,7 @@ get_args (int argc, char **argv, msg_t *msg)
         //    [default 127.0.0.1]
         case 's':;
           uint8_t saddr[4];
-          if (optarg)
+          if (optarg == NULL)
             {
               char *srest1, *srest2, *srest3, *srest4;
               saddr[0] = strtol (optarg, &srest1, 10);
@@ -147,7 +150,7 @@ get_args (int argc, char **argv, msg_t *msg)
             // I think this is for giaddr?
             ;
           uint8_t gaddr[4];
-          if (optarg)
+          if (optarg == NULL)
             {
               char *grest1, *grest2, *grest3, *grest4;
               gaddr[0] = strtol (optarg, &grest1, 10);
