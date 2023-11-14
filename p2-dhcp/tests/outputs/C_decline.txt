@@ -18,3 +18,5 @@ DHCP Options
 ------------------------------------------------------
 Magic Cookie = [OK]
 Message Type = DHCP Decline
+Request = 0.0.0.0
+Server Identifier = 0.0.0.0

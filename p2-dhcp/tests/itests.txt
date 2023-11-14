@@ -3,7 +3,7 @@ C_req_802                      pass
 C_dis_arc_xid                  pass
 C_dis_eth_addr                 pass
 C_req_arc_addr                 pass
-C_req_frame                    pass
+C_req_frame                    FAIL (see outputs/C_req_frame.diff for details)
 C_dis_fibre                    pass
 C_req_atm                      pass
 C_decline                      FAIL (see outputs/C_decline.diff for details)

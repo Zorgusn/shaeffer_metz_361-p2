@@ -129,12 +129,22 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
               msg->options[6] = DHCPDISCOVER;
               break;
             }
+
           //===================================================================
           break;
         // s: specify the server IP DHCP option
         //    [default 127.0.0.1]
         case 's':
-          if (false)
+          if (optarg != NULL)
+            {
+              msg->options[13] = 54; // server option id
+              msg->options[14] = 4;  // server addr len
+              msg->options[15] = 0;
+              msg->options[16] = 0;
+              msg->options[17] = 0;
+              msg->options[18] = 0;
+            }
+          else
             {
               msg->options[13] = 54;  // server option id
               msg->options[14] = 4;   // server addr len
@@ -147,7 +157,16 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
         // r: specify the requested IP DHCP option
         //    [default [127.0.0.2]
         case 'r':
-          if (false)
+          if (optarg)
+            {
+              msg->options[7] = 50; // request option id
+              msg->options[8] = 4;  // request addr len
+              msg->options[9] = 0;
+              msg->options[10] = 0;
+              msg->options[11] = 0;
+              msg->options[12] = 0;
+            }
+          else
             {
               msg->options[7] = 50;  // request option id
               msg->options[8] = 4;   // request addr len

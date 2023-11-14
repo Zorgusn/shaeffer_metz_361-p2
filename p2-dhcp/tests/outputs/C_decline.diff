@@ -1,8 +1,10 @@
---- outputs/C_decline.txt	2023-11-14 17:27:37.923475980 -0500
+--- outputs/C_decline.txt	2023-11-14 17:44:35.963996626 -0500
 +++ expected/C_decline.txt	2022-10-20 11:27:57.000000000 -0400
-@@ -18,3 +18,5 @@
+@@ -18,5 +18,5 @@
  ------------------------------------------------------
  Magic Cookie = [OK]
  Message Type = DHCP Decline
+-Request = 0.0.0.0
+-Server Identifier = 0.0.0.0
 +Request = 10.0.1.25
 +Server Identifier = 10.0.1.1

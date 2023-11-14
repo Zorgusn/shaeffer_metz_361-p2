@@ -18,4 +18,6 @@ DHCP Options
 ------------------------------------------------------
 Magic Cookie = [OK]
 Message Type = DHCP Request
+Request = 0.0.0.0
+Server Identifier = 0.0.0.0
 

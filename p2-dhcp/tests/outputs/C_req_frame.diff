@@ -1,0 +1,8 @@
+--- outputs/C_req_frame.txt	2023-11-14 17:44:35.951996520 -0500
++++ expected/C_req_frame.txt	2022-10-20 11:27:57.000000000 -0400
+@@ -18,5 +18,3 @@
+ ------------------------------------------------------
+ Magic Cookie = [OK]
+ Message Type = DHCP Discover
+-Request = 0.0.0.0
+-Server Identifier = 0.0.0.0
