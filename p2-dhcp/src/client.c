@@ -14,11 +14,13 @@ main (int argc, char **argv)
 {
   msg_t msg;
   memset (&msg, 0, sizeof (msg_t));
+  make_default_msg(&msg);
 
   if (!get_args (argc, argv, &msg))
     {
       return EXIT_FAILURE;
     }
+  dump_msg(stdout, &msg, sizeof(msg_t));
   return EXIT_SUCCESS;
 }
 
@@ -34,7 +36,7 @@ get_args (int argc, char **argv, msg_t *msg)
         // x: use N as the XID field (32-bit unsigned integer)
         //    [default 42]
         case 'x':
-          if (optarg == NULL)
+          if (optarg != NULL)
             {
               msg->xid = atoi (optarg);
             }
@@ -125,9 +127,9 @@ get_args (int argc, char **argv, msg_t *msg)
           break;
         // s: specify the server IP DHCP option
         //    [default 127.0.0.1]
-        case 's':;
+        case 's':; //TODO - THIS IS NOT SIADDR
           uint8_t saddr[4];
-          if (optarg == NULL)
+          if (optarg != NULL)
             {
               char *srest1, *srest2, *srest3, *srest4;
               saddr[0] = strtol (optarg, &srest1, 10);
@@ -146,11 +148,10 @@ get_args (int argc, char **argv, msg_t *msg)
           break;
         // r: specify the requested IP DHCP option
         //    [default [127.0.0.2]
-        case 'r':
-            // I think this is for giaddr?
+        case 'r': //TODO - THIS IS NOT GIADDR
             ;
           uint8_t gaddr[4];
-          if (optarg == NULL)
+          if (optarg != NULL)
             {
               char *grest1, *grest2, *grest3, *grest4;
               gaddr[0] = strtol (optarg, &grest1, 10);

@@ -71,4 +71,6 @@ typedef struct  __attribute__((__packed__)) {
 // Utility function for printing the raw bytes of a packet:
 void dump_packet(uint8_t *, size_t);
 
+void make_default_msg (msg_t *msg);
+
 #endif
