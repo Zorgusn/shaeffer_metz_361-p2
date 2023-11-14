@@ -12,20 +12,23 @@ static bool get_args (int, char **, msg_t *, bool *p);
 int
 main (int argc, char **argv)
 {
+  // variable declaration
   msg_t msg;
   bool p;
-  memset (&msg, 0, sizeof (msg_t));
-  make_default_msg(&msg);
+
+  // init msg
+  make_default_msg (&msg);
 
   if (!get_args (argc, argv, &msg, &p))
     {
       return EXIT_FAILURE;
     }
-  dump_msg(stdout, &msg, sizeof(msg_t));
-  if (p) {
-    printf("\n");
-    //TODO - Server stuff
-  }
+  dump_msg (stdout, &msg, sizeof (msg_t));
+  if (p)
+    {
+      printf ("\n");
+      // TODO - Server stuff
+    }
 
   return EXIT_SUCCESS;
 }
@@ -46,10 +49,6 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
             {
               msg->xid = atoi (optarg);
             }
-          else
-            {
-              msg->xid = 42;
-            }
           break;
         // t: use N as the hardware type (must be named in src/dhcp.h)
         //    [default ETH]
@@ -59,51 +58,45 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
             {
             case IEEE802:
               msg->htype = IEEE802;
+              msg->hlen = IEEE802_LEN;
               break;
             case ARCNET:
               msg->htype = ARCNET;
+              msg->hlen = ARCNET_LEN;
               break;
             case FRAME_RELAY:
               msg->htype = FRAME_RELAY;
+              msg->hlen = FRAME_LEN;
               break;
             case FIBRE:
               msg->htype = FIBRE;
+              msg->hlen = FIBRE_LEN;
               break;
             case ATM:
               msg->htype = ATM;
+              msg->hlen = ATM_LEN;
               break;
             case ETH: // ETH gets wrapped up as the default val
             default:
               msg->htype = ETH;
+              msg->hlen = ETH_LEN;
               break;
             }
           //===================================================================
           break;
         // c: use N as the hardware address (chaddr)
         //    [default 0x010203040506]
-        case 'c':; //TODO - SHOULD CHANGE HLEN
-          long tmpchaddr = 0;
+        case 'c':;
           if (optarg != NULL)
             {
-              tmpchaddr = strtol (optarg, NULL, 16);
-              int length = -1;
-              long temp = tmpchaddr;
-              while (temp != 0) {
-                temp /= 10;
-                length++;
-              }
-              msg->hlen = length; //TODO - Check hardware type for length?
-              for (int i = 0; i < length; i++)
+              for (int i = 0; i < strlen (optarg); i += 2)
                 {
-                  msg->chaddr[length - 1 - i] = ((uint8_t *)&tmpchaddr)[i];
-                }
-            }
-          else
-            {
-              uint8_t defarr[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
-              for (int i = 0; i < 6; i++)
-                {
-                  msg->chaddr[i] = defarr[i];
+                  char temp_str[3];
+                  // Copies two characters from optarg into temp_str
+                  strncpy (temp_str, optarg + i, 2);
+                  // Sets the value of chaddr[i / 2] to the converted value
+                  // from temp_str
+                  msg->chaddr[i / 2] = (uint8_t)strtol (temp_str, NULL, 16);
                 }
             }
           break;
@@ -140,7 +133,7 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
           break;
         // s: specify the server IP DHCP option
         //    [default 127.0.0.1]
-        case 's':; //TODO - THIS IS NOT SIADDR
+        case 's':; // TODO - THIS IS NOT SIADDR
           uint8_t saddr[4];
           if (optarg != NULL)
             {
@@ -161,7 +154,7 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
           break;
         // r: specify the requested IP DHCP option
         //    [default [127.0.0.2]
-        case 'r': //TODO - THIS IS NOT GIADDR
+        case 'r': // TODO - THIS IS NOT GIADDR
             ;
           uint8_t gaddr[4];
           if (optarg != NULL)

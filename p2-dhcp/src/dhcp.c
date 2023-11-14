@@ -29,26 +29,29 @@ dump_packet (uint8_t *ptr, size_t size)
 void
 make_default_msg (msg_t *msg)
 {
-  // memset (&msg, 0, sizeof (msg_t));
-  msg->op = 1;
-  msg->htype = 1;
-  msg->hlen = 6;
-  msg->hops = 0;
-  msg->xid = 42;
+  // 0 out all bits
+  memset (msg, 0, sizeof (msg_t));
 
+  msg->op = BOOTREQUEST;  // default op
+  msg->htype = ETH;       // default htype
+  msg->hlen = ETH_LEN;    // default hlen (correlated to default htype)
+  msg->hops = 0;          // 0 hops completed yet
+  msg->xid = 42;          // def xid
+  
+  //default chaddr (correct endianness)
   uint8_t defarr[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
   for (int i = 0; i < 6; i++)
     {
       msg->chaddr[i] = defarr[i];
     }
 
-  msg->options[0] = 0x63;
-  msg->options[1] = 0x82;
-  msg->options[2] = 0x53;
-  msg->options[3] = 0x63;
+  msg->options[0] = 0x63; // magic num
+  msg->options[1] = 0x82; // magic num
+  msg->options[2] = 0x53; // magic num
+  msg->options[3] = 0x63; // magic num
 
-  msg->options[4] = 53;
-  msg->options[5] = 1;
+  msg->options[4] = 53; // option type
+  msg->options[5] = 1;  // option len
   msg->options[6] = DHCPDISCOVER;
 
   // uint8_t *saddr = (uint8_t *)&msg->siaddr;

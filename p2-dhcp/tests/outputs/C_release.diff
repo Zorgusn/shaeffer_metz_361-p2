@@ -1,24 +1,7 @@
---- outputs/C_release.txt	2023-11-14 13:48:12.669100873 -0500
+--- outputs/C_release.txt	2023-11-14 17:12:53.740068356 -0500
 +++ expected/C_release.txt	2022-10-20 11:27:57.000000000 -0400
-@@ -0,0 +1,21 @@
-+------------------------------------------------------
-+BOOTP Options
-+------------------------------------------------------
-+Op Code (op) = 1 [BOOTREQUEST]
-+Hardware Type (htype) = 1 [Ethernet (10Mb)]
-+Hardware Address Length (hlen) = 6
-+Hops (hops) = 0
-+Transaction ID (xid) = 42 (0x2a)
-+Seconds (secs) = 0 Days, 0:00:00
-+Flags (flags) = 0
-+Client IP Address (ciaddr) = 0.0.0.0
-+Your IP Address (yiaddr) = 0.0.0.0
-+Server IP Address (siaddr) = 0.0.0.0
-+Relay IP Address (giaddr) = 0.0.0.0
-+Client Ethernet Address (chaddr) = 010203040506
-+------------------------------------------------------
-+DHCP Options
-+------------------------------------------------------
-+Magic Cookie = [OK]
-+Message Type = DHCP Release
+@@ -18,3 +18,4 @@
+ ------------------------------------------------------
+ Magic Cookie = [OK]
+ Message Type = DHCP Release
 +Server Identifier = 10.1.2.3
