@@ -86,9 +86,16 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
           if (optarg != NULL)
             {
               tmpchaddr = strtol (optarg, NULL, 16);
-              for (int i = 0; i < 16; i++)
+              int length = -1;
+              long temp = tmpchaddr;
+              while (temp != 0) {
+                temp /= 10;
+                length++;
+              }
+              msg->hlen = length; //TODO - Check hardware type for length?
+              for (int i = 0; i < length; i++)
                 {
-                  msg->chaddr[i] = ((uint8_t *)&tmpchaddr)[i];
+                  msg->chaddr[length - 1 - i] = ((uint8_t *)&tmpchaddr)[i];
                 }
             }
           else
@@ -150,7 +157,7 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
               saddr[2] = 0;
               saddr[3] = 1;
             }
-          msg->siaddr = *(uint32_t *)saddr;
+          // msg->siaddr = *(uint32_t *)saddr;
           break;
         // r: specify the requested IP DHCP option
         //    [default [127.0.0.2]
@@ -172,7 +179,7 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
               gaddr[2] = 0;
               gaddr[3] = 2;
             }
-          msg->giaddr = *(uint32_t *)gaddr;
+          // msg->giaddr = *(uint32_t *)gaddr;
           break;
         // p: initiate the protocol (send UDP packet)
         case 'p':
