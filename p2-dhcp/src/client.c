@@ -133,46 +133,29 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
           break;
         // s: specify the server IP DHCP option
         //    [default 127.0.0.1]
-        case 's':; // TODO - THIS IS NOT SIADDR
-          uint8_t saddr[4];
-          if (optarg != NULL)
+        case 's':
+          if (false)
             {
-              char *srest1, *srest2, *srest3, *srest4;
-              saddr[0] = strtol (optarg, &srest1, 10);
-              saddr[1] = strtol (srest1, &srest2, 10);
-              saddr[2] = strtol (srest2, &srest3, 10);
-              saddr[3] = strtol (srest3, &srest4, 10);
+              msg->options[13] = 54;  // server option id
+              msg->options[14] = 4;   // server addr len
+              msg->options[15] = 127; // default server addr
+              msg->options[16] = 0;   // default server addr
+              msg->options[17] = 0;   // default server addr
+              msg->options[18] = 1;   // default server addr
             }
-          else
-            {
-              saddr[0] = 127;
-              saddr[1] = 0;
-              saddr[2] = 0;
-              saddr[3] = 1;
-            }
-          // msg->siaddr = *(uint32_t *)saddr;
           break;
         // r: specify the requested IP DHCP option
         //    [default [127.0.0.2]
-        case 'r': // TODO - THIS IS NOT GIADDR
-            ;
-          uint8_t gaddr[4];
-          if (optarg != NULL)
+        case 'r':
+          if (false)
             {
-              char *grest1, *grest2, *grest3, *grest4;
-              gaddr[0] = strtol (optarg, &grest1, 10);
-              gaddr[1] = strtol (grest1, &grest2, 10);
-              gaddr[2] = strtol (grest2, &grest3, 10);
-              gaddr[3] = strtol (grest3, &grest4, 10);
+              msg->options[7] = 50;  // request option id
+              msg->options[8] = 4;   // request addr len
+              msg->options[9] = 127; // default request addr
+              msg->options[10] = 0;  // default request addr
+              msg->options[11] = 0;  // default request addr
+              msg->options[12] = 2;  // default request addr
             }
-          else
-            {
-              gaddr[0] = 127;
-              gaddr[1] = 0;
-              gaddr[2] = 0;
-              gaddr[3] = 2;
-            }
-          // msg->giaddr = *(uint32_t *)gaddr;
           break;
         // p: initiate the protocol (send UDP packet)
         case 'p':

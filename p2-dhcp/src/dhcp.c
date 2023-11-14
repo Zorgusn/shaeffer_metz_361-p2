@@ -50,21 +50,7 @@ make_default_msg (msg_t *msg)
   msg->options[2] = 0x53; // magic num
   msg->options[3] = 0x63; // magic num
 
-  msg->options[4] = 53; // option type
-  msg->options[5] = 1;  // option len
-  msg->options[6] = DHCPDISCOVER;
-
-  // uint8_t *saddr = (uint8_t *)&msg->siaddr;
-  // saddr[0] = 127;
-  // saddr[1] = 0;
-  // saddr[2] = 0;
-  // saddr[3] = 1;
-  // msg->siaddr = *(uint32_t *)saddr;
-
-  // uint8_t *gaddr = (uint8_t *)&msg->giaddr;
-  // gaddr[0] = 127;
-  // gaddr[1] = 0;
-  // gaddr[2] = 0;
-  // gaddr[3] = 2;
-  // msg->giaddr = *(uint32_t *)gaddr;
+  msg->options[4] = 53;             // message type option id
+  msg->options[5] = 1;              // message type len
+  msg->options[6] = DHCPDISCOVER;   // default message type
 }
