@@ -61,7 +61,7 @@ main (int argc, char **argv)
 
       // TODO - Server stuff
     }
-  printf("\nExiting good\n");
+  // printf("\nExiting good\n");
   return EXIT_SUCCESS;
 }
 

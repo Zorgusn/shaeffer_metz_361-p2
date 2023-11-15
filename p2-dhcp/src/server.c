@@ -18,7 +18,7 @@ static bool debug = false;
 int
 main (int argc, char **argv)
 {
-  printf("Starting\n");
+  // printf("Starting\n");
   get_args(argc, argv);
   int s;
   struct sockaddr_in client, server;
@@ -42,10 +42,10 @@ main (int argc, char **argv)
     exit(EXIT_FAILURE);
   }
   fflush(stdout);
-  // bool running = true;
-  while (true)
+  size_t running = -1;
+  while (running != 0)
     {
-      printf("Listening for client\n");
+      // printf("Listening for client\n");
       fflush(stdout);
       memset (&client, 0, sizeof (client));
       socklen_t addrlen = 0;
@@ -55,9 +55,12 @@ main (int argc, char **argv)
       printf("++++++++++++++++\nSERVER RECEIVED:\n");
       fflush(stdout);
       dump_msg(stdout, &buf, sizeof(msg_t));
+      printf("++++++++++++++++\n");
+      running += 1;
     }
   if (debug)
     fprintf (stderr, "Shutting down\n");
+  
   close(s);
   return EXIT_SUCCESS;
 }
