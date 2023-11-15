@@ -2,12 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <sys/time.h>
+#include <netdb.h>
+#include <unistd.h>
 
 #include "dhcp.h"
 #include "format.h"
 #include "port_utils.h"
 
-static bool get_args (int, char **, msg_t *, bool *, bool*);
+static bool get_args (int, char **, msg_t *, bool *, bool *);
 
 int
 main (int argc, char **argv)
@@ -32,9 +36,32 @@ main (int argc, char **argv)
   if (p)
     {
       printf ("\n");
+      int s;
+      if ((s = socket (AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+        perror("Failed to socket\n");
+        exit(EXIT_FAILURE);
+      }
+      struct timeval timeout;
+      timeout.tv_sec = 8;
+      setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
+      struct sockaddr_in server;
+      memset(&server, 0, sizeof(server)); 
+      server.sin_family = AF_INET;
+      server.sin_port = htons(strtol (get_port (), NULL, 10));
+      uint8_t *adbuf = (uint8_t *)&server.sin_addr.s_addr;
+      adbuf[0] = 127; // default server addr
+      adbuf[1] = 0;   // default server addr
+      adbuf[2] = 0;   // default server addr
+      adbuf[3] = 1;
+      if (sendto (s, &msg, sizeof (msg), 0, (const struct sockaddr *)&server, sizeof(server)) == -1) {
+        perror("Failed to send\n");
+        exit(EXIT_FAILURE);
+      }
+      close(s);
+
       // TODO - Server stuff
     }
-
+  printf("\nExiting good\n");
   return EXIT_SUCCESS;
 }
 
@@ -52,7 +79,7 @@ get_args (int argc, char **argv, msg_t *msg, bool *p, bool *frame)
         case 'x':
           if (optarg != NULL)
             {
-              msg->xid = atoi (optarg);
+              msg->xid = atol (optarg);
             }
           break;
         // t: use N as the hardware type (must be named in src/dhcp.h)
@@ -199,7 +226,6 @@ get_args (int argc, char **argv, msg_t *msg, bool *p, bool *frame)
           break;
         // p: initiate the protocol (send UDP packet)
         case 'p':
-          // ignore for now
           *p = true;
           break;
         default:
