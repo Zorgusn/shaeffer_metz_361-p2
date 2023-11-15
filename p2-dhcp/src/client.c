@@ -1,10 +1,9 @@
 #include <getopt.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <sys/time.h>
-#include <netdb.h>
 #include <unistd.h>
 
 #include "dhcp.h"
@@ -35,33 +34,56 @@ main (int argc, char **argv)
   dump_msg (stdout, &msg, sizeof (msg_t));
   if (p)
     {
-      printf ("\n");
+      msg_t buf;
+      // printf ("\n");
       int s;
-      if ((s = socket (AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-        perror("Failed to socket\n");
-        exit(EXIT_FAILURE);
-      }
-      struct timeval timeout;
-      timeout.tv_sec = 8;
-      setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
+      if ((s = socket (AF_INET, SOCK_DGRAM, 0)) < 0)
+        {
+          perror ("Failed to socket\n");
+          printf ("Failed to socket\n");
+          exit (EXIT_FAILURE);
+        }
+      // struct timeval timeout;
+      // timeout.tv_sec = 3;
+      // setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, &timeout,
+      //             sizeof (struct timeval));
+      // connect()
       struct sockaddr_in server;
-      memset(&server, 0, sizeof(server)); 
+      memset (&server, 0, sizeof (server));
       server.sin_family = AF_INET;
-      server.sin_port = htons(strtol (get_port (), NULL, 10));
+      server.sin_port = htons (strtol (get_port (), NULL, 10));
       uint8_t *adbuf = (uint8_t *)&server.sin_addr.s_addr;
       adbuf[0] = 127; // default server addr
       adbuf[1] = 0;   // default server addr
       adbuf[2] = 0;   // default server addr
       adbuf[3] = 1;
-      if (sendto (s, &msg, sizeof (msg), 0, (const struct sockaddr *)&server, sizeof(server)) == -1) {
-        perror("Failed to send\n");
-        exit(EXIT_FAILURE);
-      }
-      close(s);
 
-      // TODO - Server stuff
+
+      if (sendto (s, &msg, sizeof (msg), 0, (const struct sockaddr *)&server,
+                  sizeof (server)) 
+          == -1)
+        {
+          perror ("Failed to send\n");
+          printf ("Failed to send\n");
+          exit (EXIT_FAILURE);
+        }
+      recvfrom (s, &buf, sizeof (msg_t), 0, (struct sockaddr *)&server,
+                        NULL);
+      printf ("++++++++++++++++\nCLIENT RECEIVED:\n");
+      dump_msg (stdout, &buf, sizeof (msg_t));
+      msg.options[6] = DHCPREQUEST;
+      dump_msg (stdout, &msg, sizeof (msg_t));
+      if (sendto (s, &msg, sizeof (msg), 0, (const struct sockaddr *)&server, sizeof (server))  == -1)
+        {
+          perror ("Failed to send\n");
+          exit (EXIT_FAILURE);
+        }
+      recvfrom (s, &buf, sizeof (msg_t), 0, (struct sockaddr *)&server,NULL);
+      printf ("++++++++++++++++\nCLIENT RECEIVED:\n");
+      dump_msg (stdout, &buf, sizeof (msg_t));
+      printf ("++++++++++++++++\n");
+      close (s);
     }
-  // printf("\nExiting good\n");
   return EXIT_SUCCESS;
 }
 
