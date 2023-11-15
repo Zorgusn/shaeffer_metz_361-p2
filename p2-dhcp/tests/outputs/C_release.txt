@@ -18,4 +18,4 @@ DHCP Options
 ------------------------------------------------------
 Magic Cookie = [OK]
 Message Type = DHCP Release
-Server Identifier = 0.0.0.0
+Server Identifier = 10.1.2.3

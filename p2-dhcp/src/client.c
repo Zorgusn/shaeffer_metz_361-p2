@@ -7,21 +7,26 @@
 #include "format.h"
 #include "port_utils.h"
 
-static bool get_args (int, char **, msg_t *, bool *p);
+static bool get_args (int, char **, msg_t *, bool *, bool*);
 
 int
 main (int argc, char **argv)
 {
   // variable declaration
   msg_t msg;
-  bool p;
+  bool p, frame;
 
   // init msg
   make_default_msg (&msg);
 
-  if (!get_args (argc, argv, &msg, &p))
+  if (!get_args (argc, argv, &msg, &p, &frame))
     {
       return EXIT_FAILURE;
+    }
+  // frame htype means no server or relay options i guess
+  if (frame)
+    {
+      memset (&msg.options[7], 0, 11);
     }
   dump_msg (stdout, &msg, sizeof (msg_t));
   if (p)
@@ -34,7 +39,7 @@ main (int argc, char **argv)
 }
 
 static bool
-get_args (int argc, char **argv, msg_t *msg, bool *p)
+get_args (int argc, char **argv, msg_t *msg, bool *p, bool *frame)
 {
   int option;
 
@@ -67,6 +72,7 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
             case FRAME_RELAY:
               msg->htype = FRAME_RELAY;
               msg->hlen = FRAME_LEN;
+              *frame = true;
               break;
             case FIBRE:
               msg->htype = FIBRE;
@@ -111,6 +117,19 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
               break;
             case DHCPREQUEST:
               msg->options[6] = DHCPREQUEST;
+
+              msg->options[7] = 50;   // request option id
+              msg->options[8] = 4;    // request addr len
+              msg->options[9] = 127;  // default request addr
+              msg->options[10] = 0;   // default request addr
+              msg->options[11] = 0;   // default request addr
+              msg->options[12] = 2;   // default request addr
+              msg->options[13] = 54;  // server option id
+              msg->options[14] = 4;   // server addr len
+              msg->options[15] = 127; // default server addr
+              msg->options[16] = 0;   // default server addr
+              msg->options[17] = 0;   // default server addr
+              msg->options[18] = 1;   // default server addr
               break;
             case DHCPDECLINE:
               msg->options[6] = DHCPDECLINE;
@@ -137,12 +156,13 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
         case 's':
           if (optarg != NULL)
             {
+              char *srest1, *srest2, *srest3, *srest4;
               msg->options[13] = 54; // server option id
               msg->options[14] = 4;  // server addr len
-              msg->options[15] = 0;
-              msg->options[16] = 0;
-              msg->options[17] = 0;
-              msg->options[18] = 0;
+              msg->options[15] = strtol (optarg, &srest1, 10);
+              msg->options[16] = strtol (srest1 + 1, &srest2, 10);
+              msg->options[17] = strtol (srest2 + 1, &srest3, 10);
+              msg->options[18] = strtol (srest3 + 1, &srest4, 10);
             }
           else
             {
@@ -159,12 +179,13 @@ get_args (int argc, char **argv, msg_t *msg, bool *p)
         case 'r':
           if (optarg)
             {
+              char *rrest1, *rrest2, *rrest3, *rrest4;
               msg->options[7] = 50; // request option id
               msg->options[8] = 4;  // request addr len
-              msg->options[9] = 0;
-              msg->options[10] = 0;
-              msg->options[11] = 0;
-              msg->options[12] = 0;
+              msg->options[9] = strtol (optarg, &rrest1, 10);
+              msg->options[10] = strtol (rrest1 + 1, &rrest2, 10);
+              msg->options[11] = strtol (rrest2 + 1, &rrest3, 10);
+              msg->options[12] = strtol (rrest3 + 1, &rrest4, 10);
             }
           else
             {

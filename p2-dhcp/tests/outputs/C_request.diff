@@ -1,8 +1,0 @@
---- outputs/C_request.txt	2023-11-14 17:44:35.927996311 -0500
-+++ expected/C_request.txt	2022-10-20 11:27:57.000000000 -0400
-@@ -18,3 +18,5 @@
- ------------------------------------------------------
- Magic Cookie = [OK]
- Message Type = DHCP Request
-+Request = 127.0.0.2
-+Server Identifier = 127.0.0.1

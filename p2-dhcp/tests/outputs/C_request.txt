@@ -18,3 +18,5 @@ DHCP Options
 ------------------------------------------------------
 Magic Cookie = [OK]
 Message Type = DHCP Request
+Request = 127.0.0.2
+Server Identifier = 127.0.0.1

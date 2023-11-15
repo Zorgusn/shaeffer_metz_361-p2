@@ -1,12 +1,12 @@
-C_request                      FAIL (see outputs/C_request.diff for details)
+C_request                      pass
 C_req_802                      pass
 C_dis_arc_xid                  pass
 C_dis_eth_addr                 pass
 C_req_arc_addr                 pass
-C_req_frame                    FAIL (see outputs/C_req_frame.diff for details)
+C_req_frame                    pass
 C_dis_fibre                    pass
 C_req_atm                      pass
-C_decline                      FAIL (see outputs/C_decline.diff for details)
-C_release                      FAIL (see outputs/C_release.diff for details)
+C_decline                      pass
+C_release                      pass
 C_udp                          FAIL (see outputs/C_udp.diff for details)
 C_udp_req                      FAIL (see outputs/C_udp_req.diff for details)
