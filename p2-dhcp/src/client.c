@@ -72,6 +72,10 @@ main (int argc, char **argv)
       printf ("++++++++++++++++\nCLIENT RECEIVED:\n");
       dump_msg (stdout, &buf, sizeof (msg_t));
       printf ("++++++++++++++++\n");
+      if (buf.options[6] == DHCPNAK) {
+        close(s);
+        exit(EXIT_SUCCESS);
+      }
       msg.options[6] = DHCPREQUEST;
       msg.options[7] = 50;
       msg.options[8] = 4;

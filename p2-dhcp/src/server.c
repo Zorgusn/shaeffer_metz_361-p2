@@ -113,7 +113,8 @@ main (int argc, char **argv)
           if (off_ind == 10)
             {
               buf.options[6] = DHCPNAK;
-              break; // SEND NAK
+              memset(temp_yi, 0, 4);
+              // break; // SEND NAK
             }
           else
             {
@@ -143,8 +144,6 @@ main (int argc, char **argv)
                 } else if (code == 50) {
                   uint8_t *value = &buf.options[opt_i + 2];
                   uint8_t req = value[3];
-                  printf("HERE %d\n", req);
-                  printf("acks: %d", acks[req-1]);
                   if (!acks[req-1]) {
                     temp_yi[3] = req;
                     acks[req-1] = true;
