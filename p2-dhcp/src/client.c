@@ -71,7 +71,21 @@ main (int argc, char **argv)
                         NULL);
       printf ("++++++++++++++++\nCLIENT RECEIVED:\n");
       dump_msg (stdout, &buf, sizeof (msg_t));
+      printf ("++++++++++++++++\n");
       msg.options[6] = DHCPREQUEST;
+      msg.options[7] = 50;
+      msg.options[8] = 4;
+      msg.options[9] = 10;
+      msg.options[10] = 0;
+      msg.options[11] = 2;
+      msg.options[12] = ((uint8_t *)&buf.yiaddr)[3];
+      msg.options[13] = 54;
+      msg.options[14] = 4;
+      msg.options[15] = 10;
+      msg.options[16] = 0;
+      msg.options[17] = 2;
+      msg.options[18] = 0;
+      
       dump_msg (stdout, &msg, sizeof (msg_t));
       if (sendto (s, &msg, sizeof (msg), 0, (const struct sockaddr *)&server, sizeof (server))  == -1)
         {

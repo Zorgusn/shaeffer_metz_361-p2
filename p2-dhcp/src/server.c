@@ -71,6 +71,10 @@ main (int argc, char **argv)
     }
   fflush (stdout);
   // size_t running = -11;
+  bool offers[10];
+  memset (offers, 0, 10);
+  bool acks[10];
+  memset (acks, 0, 10);
   while (true)
     {
       // printf("Listening for client\n");
@@ -82,7 +86,7 @@ main (int argc, char **argv)
                         &addrlen);
       if (n < 0)
         {
-          close (s); //timed out
+          close (s); // timed out
           return EXIT_SUCCESS;
         }
       else
@@ -94,13 +98,69 @@ main (int argc, char **argv)
       // msg_t temp;
       // make_default_msg(&temp);
       int type = buf.options[6];
-      if (type == DHCPDISCOVER) {
-        buf.options[6] = DHCPOFFER;
-      } else if (type == DHCPREQUEST) {
-        buf.options[6] = DHCPACK;
-      }
+      if (type == DHCPDISCOVER)
+        {
+          buf.options[6] = DHCPOFFER;
+          uint8_t *temp_yi = (uint8_t *)&buf.yiaddr;
+          temp_yi[0] = 10;
+          temp_yi[1] = 0;
+          temp_yi[2] = 2;
+          int off_ind = 0;
+          while (off_ind < 10 && offers[off_ind])
+            {
+              off_ind++;
+            }
+          if (off_ind == 10)
+            {
+              buf.options[6] = DHCPNAK;
+              break; // SEND NAK
+            }
+          else
+            {
+              temp_yi[3] = off_ind + 1;
+              offers[off_ind] = true;
+            }
+        }
+      else if (type == DHCPREQUEST)
+        {
+          buf.options[6] = DHCPACK;
+          uint8_t *temp_yi = (uint8_t *)&buf.yiaddr;
+          temp_yi[0] = 10; 
+          temp_yi[1] = 0;
+          temp_yi[2] = 2;
+          int opt_i = 7;
+          while (opt_i < 312)
+            {
+              uint8_t code = buf.options[opt_i];
+              if (code == 0)
+                {
+                  opt_i += 1;
+                  continue;
+                }
+              else if (code == 255)
+                {
+                  break;
+                } else if (code == 50) {
+                  uint8_t *value = &buf.options[opt_i + 2];
+                  uint8_t req = value[3];
+                  printf("HERE %d\n", req);
+                  printf("acks: %d", acks[req-1]);
+                  if (!acks[req-1]) {
+                    temp_yi[3] = req;
+                    acks[req-1] = true;
+                  }
+                  break;
+                } else {
+                  
+                  uint8_t len = buf.options[opt_i + 1];
+                  opt_i += len + 2;
+                }
+            }
+        }
       buf.op = BOOTREPLY;
-      if (sendto (s, &buf, sizeof (buf), 0, (struct sockaddr *)&client, addrlen) == -1)
+      if (sendto (s, &buf, sizeof (buf), 0, (struct sockaddr *)&client,
+                  addrlen)
+          == -1)
         {
           perror ("Failed to send\n");
           exit (EXIT_FAILURE);
